@@ -222,11 +222,14 @@ def get_club_info(conn, url, email, driver):
         print(club_data)
 
         # Get associations and their competitions with better waiting
-        associations = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "csoyBY")))
-        for association in associations:
+        counter = 0
+        associanLength = len(wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "csoyBY"))))
+        while counter < associanLength:
+            driver.get(url)
+            associations = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "csoyBY")))
             try:
                 print("Processing association...")
-                association_html = association.get_attribute('outerHTML')
+                association_html = associations[counter].get_attribute('outerHTML')
                 association_soup = BeautifulSoup(association_html, 'html.parser')
                 
                 # Fetch association name and logo
@@ -280,6 +283,7 @@ def get_club_info(conn, url, email, driver):
             except Exception as e:
                 print(f"Error processing association: {str(e)}")
                 continue
+            counter+=1
 
         print("Inserting data into database...")
         insert_club_data(conn, email, club_data)
@@ -310,7 +314,7 @@ if __name__ == "__main__":
     # Define your email and URL pairs
     club_data = [
         ("timmurphy1181@gmail.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
-        #("test@ashburton.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
+        ("test@ashburton.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
         ("test@carnegie.com", "https://www.playhq.com/cricket-australia/org/carnegie-cricket-club/df628a00"),
         ("test@cucckings.com", "https://www.playhq.com/cricket-australia/org/cucc-kings/6e4ab302"),
         ("test@murrumbeena.com", "https://www.playhq.com/cricket-australia/org/murrumbeena-cricket-club/de3182fc"),
