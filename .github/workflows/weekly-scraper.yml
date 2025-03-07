@@ -29,11 +29,20 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Setup Chrome and ChromeDriver
+      - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: stable
-          install-chromedriver: true
+
+      - name: Get Chrome Version
+        run: |
+          echo "CHROME_VERSION=$(google-chrome --version | awk '{print $3}')" >> $GITHUB_ENV
+
+      - name: Install Matching ChromeDriver
+        run: |
+          wget https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
 
       - name: Install dependencies
         run: |
