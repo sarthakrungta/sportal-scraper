@@ -36,13 +36,20 @@ jobs:
 
       - name: Get Chrome Version
         run: |
-          echo "CHROME_VERSION=$(google-chrome --version | awk '{print $3}')" >> $GITHUB_ENV
+          echo "CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1)" >> $GITHUB_ENV
 
-      - name: Install Matching ChromeDriver
+      - name: Find Matching ChromeDriver Version
         run: |
-          wget https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
+          CHROME_DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" \
+          | jq -r --arg v "$CHROME_VERSION" '.channels.Stable.versions[] | select(.version | startswith($v)) | .version' | head -n 1)
+          echo "CHROME_DRIVER_VERSION=$CHROME_DRIVER_VERSION" >> $GITHUB_ENV
+
+      - name: Install ChromeDriver
+        run: |
+          wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_DRIVER_VERSION/linux64/chromedriver-linux64.zip
+          unzip chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+          chmod +x /usr/local/bin/chromedriver
 
       - name: Install dependencies
         run: |
