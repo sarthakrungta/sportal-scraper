@@ -313,7 +313,7 @@ if __name__ == "__main__":
     
     # Define your email and URL pairs
     club_data = [
-        ("test@monashblues.com", "https://www.playhq.com/afl/org/monash-blues/f55b375c/victorian-amateur-football-association-vafa-2025/teams/monash-blues-senior-mens/7b1ccfc9"),
+        ("test@monashblues.com", "https://www.playhq.com/afl/org/monash-blues/f55b375c"),
     ]
 
     # Loop through each set and call the method
