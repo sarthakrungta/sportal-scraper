@@ -313,12 +313,7 @@ if __name__ == "__main__":
     
     # Define your email and URL pairs
     club_data = [
-        ("timmurphy1181@gmail.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
-        ("test@ashburton.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
-        ("test@carnegie.com", "https://www.playhq.com/cricket-australia/org/carnegie-cricket-club/df628a00"),
-        ("test@cucckings.com", "https://www.playhq.com/cricket-australia/org/cucc-kings/6e4ab302"),
-        ("test@murrumbeena.com", "https://www.playhq.com/cricket-australia/org/murrumbeena-cricket-club/de3182fc"),
-        ("test@monashcc.com", "https://www.playhq.com/cricket-australia/org/monash-cricket-club/2a74f308")
+        ("test@monashblues.com", "https://www.playhq.com/afl/org/monash-blues/f55b375c/victorian-amateur-football-association-vafa-2025/teams/monash-blues-senior-mens/7b1ccfc9"),
     ]
 
     # Loop through each set and call the method
