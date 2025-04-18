@@ -38,6 +38,56 @@ def insert_club_data(conn, email, club_data):
     conn.commit()
     cursor.close()
 
+def get_scores(link, driver):
+
+    finalScoresJson = {
+        "teamA": {
+            "finalScore": "",
+            "finalBreakdown": "",
+            "periodScores": []
+        },
+        "teamB": {
+            "finalScore": "",
+            "finalBreakdown": "",
+            "periodScores": []
+        }
+    }
+
+    teams=["teamA","teamB"]
+
+    try:
+        url = f'https://www.playhq.com{link}'
+        driver.get(url)
+        print(url)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        
+        
+        finalScoreSets = soup.find_all('span', class_=lambda x: x and any("sc-1swl5w-13" in cls for cls in x.split()))
+        finalScoreAndBreakdownTeamA = soup.find('span', class_=lambda x: x and any("sc-1swl5w-14" in cls for cls in x.split()))
+        finalScoreAndBreakdownTeamB = soup.find('span', class_=lambda x: x and any("sc-1swl5w-15" in cls for cls in x.split()))
+
+        
+        
+        periodScoreSets = soup.find_all('tr', class_='sc-2xhb8k-12 bGvXXJ')
+        if len(finalScoreSets) == 2 and len(periodScoreSets) == 2:
+            for i in range(2):
+                finalScoreAndBreakdown = finalScoreAndBreakdownTeamA if i == 0 else finalScoreAndBreakdownTeamB
+                finalScore = finalScoreAndBreakdown.find('span').text
+                finalBreakdown = finalScoreAndBreakdown.find('div').text
+                finalScoresJson[teams[i]]["finalScore"] = finalScore
+                finalScoresJson[teams[i]]["finalBreakdown"] = finalBreakdown
+                print(finalScore,finalBreakdown)
+
+                periodScoresSpans = periodScoreSets[i].find_all('span')
+                periodScores = [periodScoresSpan.get_text(strip=True) for periodScoresSpan in periodScoresSpans[1:]][::2]
+                finalScoresJson[teams[i]]["periodScores"] = periodScores   
+        
+    except Exception as e:
+        print(f'Ran into error: ${e}')
+    
+    return finalScoresJson 
+
+
 
 def get_players(isHome, link, driver):
     playerList = []
@@ -49,6 +99,7 @@ def get_players(isHome, link, driver):
     try:
         driver.get(f'https://www.playhq.com{link}')
         soup = BeautifulSoup(driver.page_source, 'html.parser')
+                
         teamsSets = soup.find_all('table', class_=lambda x: x and any(cls.startswith('sc-155yh5n-2') for cls in x.split()))
 
         if len(teamsSets) == 2:
@@ -85,6 +136,7 @@ def get_fixtures(soup, team_name, driver):
         team_b = "Team B"
         team_b_logo = "https://pngfre.com/wp-content/uploads/Cricket-14-1.png"
         playerList = []
+        finalScores = {}
 
         try:
             # Attempt to extract fixture name and date
@@ -98,6 +150,8 @@ def get_fixtures(soup, team_name, driver):
             teams_div = fixture.find_all('div', class_="sc-12j2xsj-0 jXoewb")
 
             print("FIXTURE TEST 2", fixture_name, "-", fixture_date, "-", arrowLink)
+
+            finalScores = get_scores(arrowLink,driver)
 
             # Handle team A
             team_a_div = teams_div[0] if len(teams_div) > 0 else None
@@ -146,7 +200,8 @@ def get_fixtures(soup, team_name, driver):
             "teamALogo": team_a_logo,
             "teamB": team_b,
             "teamBLogo": team_b_logo,
-            "playerList": playerList
+            "playerList": playerList,
+            "finalScores": finalScores
         })
 
     return fixtures
