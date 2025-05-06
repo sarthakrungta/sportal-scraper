@@ -38,7 +38,7 @@ def insert_club_data(conn, email, club_data):
     conn.commit()
     cursor.close()
 
-def get_scores(link, driver):
+def get_scores(link, driver, teamSidePos):
 
     finalScoresJson = {
         "teamA": {
@@ -50,7 +50,8 @@ def get_scores(link, driver):
             "finalScore": "",
             "finalBreakdown": "",
             "periodScores": []
-        }
+        },
+        "bestPlayers":""
     }
 
     teams=["teamA","teamB"]
@@ -66,7 +67,9 @@ def get_scores(link, driver):
         finalScoreAndBreakdownTeamA = soup.find('span', class_=lambda x: x and any("sc-1swl5w-14" in cls for cls in x.split()))
         finalScoreAndBreakdownTeamB = soup.find('span', class_=lambda x: x and any("sc-1swl5w-15" in cls for cls in x.split()))
 
-        
+        bestPlayersDivs = soup.find_all('div', class_='sc-shiof1-0 idEwle')
+
+        finalScoresJson["bestPlayers"] = bestPlayersDivs[teamSidePos].get_text()
         
         periodScoreSets = soup.find_all('tr', class_='sc-2xhb8k-12 bGvXXJ')
         if len(finalScoreSets) == 2 and len(periodScoreSets) == 2:
@@ -76,7 +79,6 @@ def get_scores(link, driver):
                 finalBreakdown = finalScoreAndBreakdown.find('div').text
                 finalScoresJson[teams[i]]["finalScore"] = finalScore
                 finalScoresJson[teams[i]]["finalBreakdown"] = finalBreakdown
-                print(finalScore,finalBreakdown)
 
                 periodScoresSpans = periodScoreSets[i].find_all('span')
                 periodScores = [periodScoresSpan.get_text(strip=True) for periodScoresSpan in periodScoresSpans[1:]][::2]
@@ -151,8 +153,6 @@ def get_fixtures(soup, team_name, driver):
 
             print("FIXTURE TEST 2", fixture_name, "-", fixture_date, "-", arrowLink)
 
-            finalScores = get_scores(arrowLink,driver)
-
             # Handle team A
             team_a_div = teams_div[0] if len(teams_div) > 0 else None
             print("FIXTURE TEST 3 ", team_a_div)
@@ -161,8 +161,10 @@ def get_fixtures(soup, team_name, driver):
                               team_a_div.find('a', class_="sc-kpDqfm sc-12j2xsj-3 gDVNBY cdnZHA")
                 team_a = team_a_link.get_text() if team_a_link else team_a
                 if (team_a == team_name):
-                    print("IS HOME TEAM")
+                    print("OURS IS THE LEFT TEAM")
+                    finalScores = get_scores(arrowLink,driver,0)
                     playerList = get_players(True,arrowLink,driver)
+                    
                 team_a_logo_tag = team_a_div.find('img')
                 team_a_logo = team_a_logo_tag.get('src') if team_a_logo_tag else team_a_logo
 
@@ -174,8 +176,9 @@ def get_fixtures(soup, team_name, driver):
                               team_b_div.find('a', class_="sc-kpDqfm sc-12j2xsj-3 gDVNBY cdnZHA")
                 team_b = team_b_link.get_text() if team_b_link else team_b
                 if (team_b == team_name):
-                    print("NOT HOME TEAM")
+                    print("OURS IS THE RIGHT TEAM")
                     playerList = get_players(False,arrowLink, driver)
+                    finalScores = get_scores(arrowLink,driver,1)
                 team_b_logo_tag = team_b_div.find('img')
                 team_b_logo = team_b_logo_tag.get('src') if team_b_logo_tag else team_b_logo
 
