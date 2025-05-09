@@ -51,43 +51,47 @@ def get_scores(link, driver, teamSidePos):
             "finalBreakdown": "",
             "periodScores": []
         },
-        "bestPlayers":""
+        "bestPlayers": ""
     }
 
-    teams=["teamA","teamB"]
+    teams = ["teamA", "teamB"]
 
     try:
         url = f'https://www.playhq.com{link}'
         driver.get(url)
         print(url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        
-        
-        finalScoreSets = soup.find_all('span', class_=lambda x: x and any("sc-1swl5w-13" in cls for cls in x.split()))
-        finalScoreAndBreakdownTeamA = soup.find('span', class_=lambda x: x and any("sc-1swl5w-14" in cls for cls in x.split()))
-        finalScoreAndBreakdownTeamB = soup.find('span', class_=lambda x: x and any("sc-1swl5w-15" in cls for cls in x.split()))
+        try:
+            bestPlayersDivs = soup.find_all('div', class_='sc-shiof1-0 idEwle')
+            finalScoresJson["bestPlayers"] = bestPlayersDivs[teamSidePos].get_text()
+        except Exception as e:
+            print(f"Error getting best players: {e}")
 
-        bestPlayersDivs = soup.find_all('div', class_='sc-shiof1-0 idEwle')
+        try:
+            finalScoreSets = soup.find_all('span', class_=lambda x: x and any("sc-1swl5w-13" in cls for cls in x.split()))
+            finalScoreAndBreakdownTeamA = soup.find('span', class_=lambda x: x and any("sc-1swl5w-14" in cls for cls in x.split()))
+            finalScoreAndBreakdownTeamB = soup.find('span', class_=lambda x: x and any("sc-1swl5w-15" in cls for cls in x.split()))
+            periodScoreSets = soup.find_all('tr', class_='sc-2xhb8k-12 bGvXXJ')
 
-        finalScoresJson["bestPlayers"] = bestPlayersDivs[teamSidePos].get_text()
-        
-        periodScoreSets = soup.find_all('tr', class_='sc-2xhb8k-12 bGvXXJ')
-        if len(finalScoreSets) == 2 and len(periodScoreSets) == 2:
-            for i in range(2):
-                finalScoreAndBreakdown = finalScoreAndBreakdownTeamA if i == 0 else finalScoreAndBreakdownTeamB
-                finalScore = finalScoreAndBreakdown.find('span').text
-                finalBreakdown = finalScoreAndBreakdown.find('div').text
-                finalScoresJson[teams[i]]["finalScore"] = finalScore
-                finalScoresJson[teams[i]]["finalBreakdown"] = finalBreakdown
+            if len(finalScoreSets) == 2 and len(periodScoreSets) == 2:
+                for i in range(2):
+                    finalScoreAndBreakdown = finalScoreAndBreakdownTeamA if i == 0 else finalScoreAndBreakdownTeamB
+                    finalScore = finalScoreAndBreakdown.find('span').text
+                    finalBreakdown = finalScoreAndBreakdown.find('div').text
+                    finalScoresJson[teams[i]]["finalScore"] = finalScore
+                    finalScoresJson[teams[i]]["finalBreakdown"] = finalBreakdown
 
-                periodScoresSpans = periodScoreSets[i].find_all('span')
-                periodScores = [periodScoresSpan.get_text(strip=True) for periodScoresSpan in periodScoresSpans[1:]][::2]
-                finalScoresJson[teams[i]]["periodScores"] = periodScores   
-        
+                    periodScoresSpans = periodScoreSets[i].find_all('span')
+                    periodScores = [periodScoresSpan.get_text(strip=True) for periodScoresSpan in periodScoresSpans[1:]][::2]
+                    finalScoresJson[teams[i]]["periodScores"] = periodScores
+        except Exception as e:
+            print(f"Error getting scores: {e}")
+
     except Exception as e:
-        print(f'Ran into error: ${e}')
-    
-    return finalScoresJson 
+        print(f"General error: {e}")
+
+    return finalScoresJson
+
 
 
 
@@ -371,6 +375,8 @@ if __name__ == "__main__":
     # Define your email and URL pairs
     club_data = [
         ("test@monashblues.com","https://www.playhq.com/afl/org/monash-blues/f55b375c"),
+        ("test@monashdemons.com", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
+        ("monash@fida.org.au", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
         #("timmurphy1181@gmail.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
         #("test@ashburton.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
         #("test@carnegie.com", "https://www.playhq.com/cricket-australia/org/carnegie-cricket-club/df628a00"),
