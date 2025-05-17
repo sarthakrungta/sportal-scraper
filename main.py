@@ -20,7 +20,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('club_scraper.log')
     ]
 )
 
@@ -81,6 +80,11 @@ def get_scores(link, driver, teamSidePos):
         url = f'https://www.playhq.com{link}'
         logger.info(f"Navigating to scores URL: {url}")
         driver.get(url)
+
+        WebDriverWait(driver, 20).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="scores"]'))
+)
+
         
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         
@@ -476,9 +480,9 @@ if __name__ == "__main__":
     chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36')
     
     club_data = [
-        ("test@monashblues.com", "https://www.playhq.com/afl/org/monash-blues/f55b375c"),
-        ("test@monashdemons.com", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
         ("monash@fida.org.au", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
+        ("test@monashdemons.com", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
+        ("test@monashblues.com", "https://www.playhq.com/afl/org/monash-blues/f55b375c"),
         #("timmurphy1181@gmail.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
         #("test@ashburton.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
         #("test@carnegie.com", "https://www.playhq.com/cricket-australia/org/carnegie-cricket-club/df628a00"),
