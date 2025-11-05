@@ -168,7 +168,7 @@ def get_players(isHome, link, driver):
 
 def get_fixtures(soup, team_name, driver):
     logger.info(f"Starting get_fixtures for team: {team_name}")
-    fixture_list = soup.find_all('div', class_='sc-fnpp5x-0 sc-fnpp5x-5 boRXYi iSdlQK')
+    fixture_list = soup.find_all('div', class_='sc-1pr338c-0 sc-1pr338c-5 kBhuTP cNVAcP')
     fixtures = []
     logger.info(f"Found {len(fixture_list)} fixtures to process")
 
@@ -187,8 +187,8 @@ def get_fixtures(soup, team_name, driver):
         }
 
         try:
-            arrowLink = fixture.find('a', class_='sc-10c3c88-6 gdEmqr')["href"]
-            fixture_name_tag = fixture.find('h3', class_="sc-kpDqfm sc-10c3c88-1 bAhzTo fLyUTG")
+            arrowLink = fixture.find('a', class_='sc-1uurivg-6 iutIKi')["href"]
+            fixture_name_tag = fixture.find('h3', class_="sc-kpDqfm sc-1uurivg-1 bdfwRM jylssf")
             fixture_date_tag = fixture.find('span', class_="sc-gFqAkR jPxLpB")
             
             if fixture_name_tag:
@@ -198,7 +198,7 @@ def get_fixtures(soup, team_name, driver):
 
             logger.info(f"Processing fixture: {fixture_data['fixtureName']} on {fixture_data['fixtureDate']}")
 
-            teams_div = fixture.find_all('div', class_="sc-12j2xsj-0 jXoewb")
+            teams_div = fixture.find_all('div', class_="sc-9jw1ry-0 huSxAf")
             if len(teams_div) < 2:
                 logger.warning(f"Unexpected number of teams divs found: {len(teams_div)}")
                 continue
@@ -207,8 +207,8 @@ def get_fixtures(soup, team_name, driver):
             team_a_div = teams_div[0]
             if team_a_div:
                 try:
-                    team_a_link = team_a_div.find('a', class_="sc-kpDqfm sc-12j2xsj-3 dHxVeH cdnZHA") or \
-                                  team_a_div.find('a', class_="sc-kpDqfm sc-12j2xsj-3 gDVNBY cdnZHA")
+                    team_a_link = team_a_div.find('a', class_="sc-kpDqfm sc-9jw1ry-3 eYcUgj iidZlU") or \
+                                  team_a_div.find('a', class_="sc-kpDqfm sc-9jw1ry-3 gsraGE iidZlU")
                     if team_a_link:
                         fixture_data["teamA"] = team_a_link.get_text()
                         if fixture_data["teamA"] == team_name:
@@ -226,8 +226,8 @@ def get_fixtures(soup, team_name, driver):
             team_b_div = teams_div[1]
             if team_b_div:
                 try:
-                    team_b_link = team_b_div.find('a', class_="sc-kpDqfm sc-12j2xsj-3 dHxVeH cdnZHA") or \
-                                  team_b_div.find('a', class_="sc-kpDqfm sc-12j2xsj-3 gDVNBY cdnZHA")
+                    team_b_link = team_b_div.find('a', class_="sc-kpDqfm sc-9jw1ry-3 eYcUgj iidZlU") or \
+                                  team_b_div.find('a', class_="sc-kpDqfm sc-9jw1ry-3 gsraGE iidZlU")
                     if team_b_link:
                         fixture_data["teamB"] = team_b_link.get_text()
                         if fixture_data["teamB"] == team_name:
@@ -242,14 +242,14 @@ def get_fixtures(soup, team_name, driver):
                     logger.error(f"Error processing Team B: {str(e)}")
 
             # Process venue and format
-            fixture_card = fixture.find('div', class_="sc-10c3c88-11 GJoRe")
+            fixture_card = fixture.find('div', class_="sc-1uurivg-11 jbzXQr")
             if fixture_card:
                 try:
-                    fixture_venue_tag = fixture_card.find('a', class_="sc-kpDqfm sc-10c3c88-16 benLvT gIKUwU")
+                    fixture_venue_tag = fixture_card.find('a', class_="sc-kpDqfm sc-1uurivg-16 elsLpL hFBDdd")
                     if fixture_venue_tag:
                         fixture_data["fixtureVenue"] = fixture_venue_tag.get_text()
                     
-                    fixture_format_tag = fixture_card.find('span', class_="sc-kpDqfm sc-10c3c88-12 htBoat ffHzsh")
+                    fixture_format_tag = fixture_card.find('span', class_="sc-kpDqfm sc-1uurivg-12 gkKuDp iTeyOw")
                     if fixture_format_tag:
                         fixture_data["fixtureFormat"] = fixture_format_tag.get_text()
                 except Exception as e:
@@ -269,7 +269,7 @@ def get_teams(soup, seasonName, driver):
     teams = []
     
     try:
-        team_list_ul = soup.find('ul', class_=re.compile(r"emEiLO$"))
+        team_list_ul = soup.find('ul', class_=re.compile(r"sc-bmzYkS$"))
         if not team_list_ul:
             logger.warning("No team list ul found")
             return teams
@@ -279,13 +279,13 @@ def get_teams(soup, seasonName, driver):
         
         for team in team_list:
             try:
-                team_name = team.find('span', class_='sc-kpDqfm kvnOPN')
+                team_name = team.find('span', class_='sc-kpDqfm hOfaAZ')
                 if not team_name:
                     logger.warning("Team name not found in team element")
                     continue
                     
                 team_name = team_name.get_text()
-                team_link_tag = team.find("a", class_="sc-1c9d0lx-6 eYEzkz")
+                team_link_tag = team.find("a", class_="sc-yd82ml-6 hByBDy")
                 if not team_link_tag:
                     logger.warning(f"No team link found for team: {team_name}")
                     continue
@@ -295,7 +295,7 @@ def get_teams(soup, seasonName, driver):
                 
                 driver.get(team_link)
                 WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "sc-fnpp5x-0"))
+                    EC.presence_of_element_located((By.CLASS_NAME, "sc-1pr338c-0"))
                 )
                 team_soup = BeautifulSoup(driver.page_source, 'html.parser')
                 fixtures = get_fixtures(team_soup, team_name, driver)
@@ -346,7 +346,7 @@ def get_club_info(conn, url, email, driver):
             club_name_element = driver.find_element(By.CLASS_NAME, "organisation-name")
             club_data["clubName"] = club_name_element.text
             
-            logo_element = driver.find_element(By.CLASS_NAME, "guhTET")
+            logo_element = driver.find_element(By.CLASS_NAME, "sc-11pizr8-0")
             club_logo = logo_element.find_element(By.TAG_NAME, "img").get_attribute("src")
             club_data["clubLogo"] = club_logo
             logger.info(f"Found club: {club_data['clubName']}")
@@ -355,14 +355,12 @@ def get_club_info(conn, url, email, driver):
 
         # Process associations
         try:
-            associations = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "csoyBY")))
+            associations = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "sc-1dp4kje-5")))
             associanLength = len(associations)
             logger.info(f"Found {associanLength} associations to process")
             
             for counter in range(associanLength):
                 try:
-                    driver.get(url)
-                    associations = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "csoyBY")))
                     association_html = associations[counter].get_attribute('outerHTML')
                     association_soup = BeautifulSoup(association_html, 'html.parser')
                     
@@ -373,8 +371,7 @@ def get_club_info(conn, url, email, driver):
                         continue
                         
                     association_name = association_name.get_text()
-                    association_logo_tag = association_soup.find('div', class_="sc-e3sm8r-0 dQQPAx sc-3lpl8o-4 jkyKuu")
-                    association_logo = association_logo_tag.find('img').get('src') if association_logo_tag else ""
+                    association_logo = association_soup.find('img').get('src')
                     
                     logger.info(f"Processing association: {association_name}")
                     
@@ -383,7 +380,7 @@ def get_club_info(conn, url, email, driver):
                     
                     for competition in competitions:
                         try:
-                            competition_name_tag = competition.find('h2', class_='sc-kpDqfm sc-s41lvh-4 bAhzTo cZpNhh')
+                            competition_name_tag = competition.find('h2', class_='sc-kpDqfm sc-v0uy34-4 bdfwRM elskTM')
                             if not competition_name_tag:
                                 logger.warning("Skipping competition - name not found")
                                 continue
@@ -397,8 +394,8 @@ def get_club_info(conn, url, email, driver):
                             for season in seasons_ul:
                                 for li in season.find_all('li'):
                                     try:
-                                        season_name_tag = li.find('span', class_='sc-kpDqfm sc-s41lvh-5 kvnOPN lffCOc')
-                                        season_link_tag = li.find("a", class_="sc-s41lvh-3 dImJDh")
+                                        season_name_tag = li.find('span', class_='sc-kpDqfm sc-v0uy34-5 hOfaAZ kVbhgd')
+                                        season_link_tag = li.find("a", class_="sc-v0uy34-3 bkBUNM")
                                         
                                         if not season_name_tag or not season_link_tag:
                                             logger.warning("Skipping season - name or link not found")
@@ -410,7 +407,7 @@ def get_club_info(conn, url, email, driver):
                                         
                                         driver.get(link)
                                         try:
-                                            wait.until(EC.presence_of_element_located((By.CLASS_NAME, "emEiLO")))
+                                            wait.until(EC.presence_of_element_located((By.CLASS_NAME, "sc-bmzYkS")))
                                             time.sleep(2)
                                             
                                             season_soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -480,16 +477,7 @@ if __name__ == "__main__":
     chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36')
     
     club_data = [
-        ("monash@fida.org.au", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
-        ("test@monashdemons.com", "https://www.playhq.com/afl/org/monash-demons/242489e2"),
-        ("test@monashblues.com", "https://www.playhq.com/afl/org/monash-blues/f55b375c"),
-        #("timmurphy1181@gmail.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
-        #("test@ashburton.com", "https://www.playhq.com/cricket-australia/org/ashburton-willows-cricket-club/55f5bdce"),
-        #("test@carnegie.com", "https://www.playhq.com/cricket-australia/org/carnegie-cricket-club/df628a00"),
-        #("test@cucckings.com", "https://www.playhq.com/cricket-australia/org/cucc-kings/6e4ab302"),
-        #("test@murrumbeena.com", "https://www.playhq.com/cricket-australia/org/murrumbeena-cricket-club/de3182fc"),
-        #("test@monashcc.com", "https://www.playhq.com/cricket-australia/org/monash-cricket-club/2a74f308")
-
+        ("test@powerhouse.com","https://www.playhq.com/cricket-australia/org/power-house-cricket-club/e0c8c52c"),
     ]
 
     for email, url in club_data:
