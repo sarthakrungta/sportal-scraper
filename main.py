@@ -141,7 +141,7 @@ def get_players(isHome, link, driver):
         driver.get(url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
                 
-        teamsSets = soup.find_all('table', class_=lambda x: x and any(cls.startswith('sc-155yh5n-2') for cls in x.split()))
+        teamsSets = soup.find_all('table', class_=lambda x: x and any(cls.startswith('sc-bgtjih-2') for cls in x.split()))
 
         if len(teamsSets) == 2:
             logger.info("Found both team sets")
